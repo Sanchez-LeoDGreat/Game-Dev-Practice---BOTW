@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://dg8ldrji2qgkc"]
+
+[ext_resource type="Script" uid="uid://bmc3doebvlfhd" path="res://scenes/projectiles/Fireball.cs" id="1_nx3os"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ynm7a"]
+albedo_color = Color(0.9490196, 0.13333334, 0, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ynm7a"]
+
+[node name="Fireball" type="Area3D"]
+collision_layer = 8
+collision_mask = 7
+script = ExtResource("1_nx3os")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
+material_override = SubResource("StandardMaterial3D_ynm7a")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_ynm7a")
+
+[connection signal="body_entered" from="." to="." method="OnBodyEntered"]

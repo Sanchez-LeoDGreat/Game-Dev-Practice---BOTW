@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://cwj2j0km55qer"]
+
+[ext_resource type="PackedScene" uid="uid://bgc40c1wql2b1" path="res://graphics/ui/heart.tscn" id="1_ap5ha"]
+
+[node name="UI" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Hearts" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="Hearts"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Hearts/MarginContainer"]
+layout_mode = 2
+
+[node name="Heart" parent="Hearts/MarginContainer/HBoxContainer" instance=ExtResource("1_ap5ha")]
+layout_mode = 2
