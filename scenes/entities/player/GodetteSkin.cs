@@ -111,17 +111,23 @@ public partial class GodetteSkin : Node3D
 		}
 	}
 
-	public void ShootFireball()
+	public void ShootMagic()
 	{
-		player.ShootFireball(marker3D.GlobalPosition);
+		player.ShootMagic(marker3D.GlobalPosition);
 	}
 
 	public void Hit()
 	{
-		extraAnimation.Animation = "Hit_A";
-		animTree.Set("parameters/ExtraOneShot/request", (int)AnimationNodeOneShot.OneShotRequest.Fire);
-		animTree.Set("parameters/AttackOneShot/request", (int)AnimationNodeOneShot.OneShotRequest.Abort);
-		attacking = false;
+		if (!Convert.ToBoolean(player.invulTimer.TimeLeft))
+		{
+			extraAnimation.Animation = "Hit_A";
+			animTree.Set("parameters/ExtraOneShot/request", (int)AnimationNodeOneShot.OneShotRequest.Fire);
+			animTree.Set("parameters/AttackOneShot/request", (int)AnimationNodeOneShot.OneShotRequest.Abort);
+			player.StopMovement(0.3f, 0.3f);
+			attacking = false;
+			player.Health -= 1;
+			player.invulTimer.Start();
+		}
 	}
 
 	public void DoSquashAndStretch(float value, float duration = 0.1f)

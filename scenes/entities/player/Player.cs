@@ -1,5 +1,7 @@
 using Godot;
+using Godot.Collections;
 using System;
+using System.Linq;
 
 public partial class Player : CharacterBody3D
 {
@@ -19,6 +21,50 @@ public partial class Player : CharacterBody3D
 	private float jumpVelocity;
 	private float jumpGravity;
 	private float fallGravity;
+	private int _health = 5;
+	public int Health
+	{
+		get => _health;
+		set
+		{
+			ui.UpdateHealth(value, value - _health);
+			_health = value;
+
+			if (_health <= 0)
+			{
+				this.GetTree().Quit();
+			}
+		}
+	}
+	private int _energy = 100;
+	public int Energy
+	{
+		get => _energy;
+		set
+		{
+			ui.UpdateEnergy(value);
+			_energy = Mathf.Min(value, 100);
+		}
+	}
+	private int _stamina = 100;
+	public int Stamina
+	{
+		get => _stamina;
+		set
+		{
+			ui.UpdateStamina(_stamina, value);
+			if (_stamina == 100 && value < 100)
+			{
+				ui.ChangeStaminaAlpha(1);
+			}
+			if (value == 100)
+			{
+				ui.ChangeStaminaAlpha(0);
+			}
+
+			_stamina = Mathf.Clamp(value, 0, 100);
+		}
+	}
 	private bool _defending;
 	public bool Defending
 	{
@@ -31,13 +77,25 @@ public partial class Player : CharacterBody3D
 			godetteSkin.Defend(value);
 		}
 	}
-	public bool weaponActive = true;
+	private bool _weaponActive = true;
+	public bool WeaponActive
+	{
+		get => _weaponActive;
+		set
+		{
+			ui.spellControl.Visible = !value;
+			_weaponActive = value;
+		}
+	}
 	public Vector2 lastMovementInput = new Vector2(0, 1);
 	Camera3D camera;
 	public GodetteSkin godetteSkin;
 	AnimationPlayer playerAnimation;
 	Vector2 movementInput = Vector2.Zero;
-	Timer invulTimer;
+	Ui ui;
+	public Timer invulTimer;
+	Timer energyRecoveryTimer;
+	Timer staminaRecoveryTimer;
 	[Signal]
 	public delegate void CastSpellEventHandler(string type, Vector3 pos, Vector2 direction, float size);
 	public override void _Ready()
@@ -49,7 +107,12 @@ public partial class Player : CharacterBody3D
 		camera = this.GetNode<Camera3D>("CameraController/Camera3D");
 		godetteSkin = this.GetNode<GodetteSkin>("GodetteSkin");
 		playerAnimation = this.GetNode<AnimationPlayer>("GodetteSkin/AnimationPlayer");
-		invulTimer = this.GetNode<Timer>("InvulTimer");
+		invulTimer = this.GetNode<Timer>("Timers/InvulTimer");
+		energyRecoveryTimer = this.GetNode<Timer>("Timers/EnergyRecoveryTimer");
+		staminaRecoveryTimer = this.GetNode<Timer>("Timers/StaminaRecoveryTimer");
+		ui = this.GetNode<Ui>("UI");
+
+		ui.Setup(Health);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -99,10 +162,11 @@ public partial class Player : CharacterBody3D
 		Vector3 velocity = this.Velocity;
 		if (IsOnFloor())
 		{
-			if (Input.IsActionJustPressed("jump"))
+			if (Input.IsActionJustPressed("jump") && Stamina >= 20)
 			{
 				velocity.Y = jumpVelocity;
 				godetteSkin.DoSquashAndStretch(1.2f, 0.15f);
+				Stamina -= 20;
 			}
 		}
 		else
@@ -119,14 +183,18 @@ public partial class Player : CharacterBody3D
 		// Actual Attack
 		if (Input.IsActionJustPressed("ability"))
 		{
-			if (weaponActive)
+			if (WeaponActive)
 			{
 				godetteSkin.Attack();
 			}
 			else
 			{
-				godetteSkin.CastSpell();
-				StopMovement(0.3f, 0.3f);
+				if (Energy >= 20)
+				{
+					godetteSkin.CastSpell();
+					StopMovement(0.3f, 0.3f);
+					Energy -= 20;
+				}
 			}
 		}
 
@@ -136,8 +204,13 @@ public partial class Player : CharacterBody3D
 		// Switch Weapon/Magic
 		if (Input.IsActionJustPressed("switch weapon") && !godetteSkin.attacking)
 		{
-			weaponActive = !weaponActive;
-			godetteSkin.SwitchWeapon(weaponActive);
+			WeaponActive = !WeaponActive;
+			godetteSkin.SwitchWeapon(WeaponActive);
+		}
+		if (Input.IsActionJustPressed("switch spell") && !godetteSkin.attacking)
+		{
+			ui.currentSpell = ui.Spells.Keys.ToArray()[(ui.currentSpell + 1) % ui.Spells.Count];
+			ui.UpdateSpell(ui.Spells, ui.currentSpell);
 		}
 	}
 
@@ -148,8 +221,25 @@ public partial class Player : CharacterBody3D
 		tween.TweenProperty(this, "speedModifier", 1.0, endDuration);
 	}
 
-	public void ShootFireball(Vector3 pos)
+	public void ShootMagic(Vector3 pos)
 	{
-		this.EmitSignal(SignalName.CastSpell, "fireball", pos, lastMovementInput, 1f);
+		if (ui.currentSpell == ui.GetSpellKey("Fireball"))
+		{
+			this.EmitSignal(SignalName.CastSpell, "fireball", pos, lastMovementInput, 1f);
+		}
+		else if (ui.currentSpell == ui.GetSpellKey("Heal"))
+		{
+			Health += 1;
+		}
+	}
+
+	public void OnEnergyRecoveryTimerTimeout()
+	{
+		Energy += 1;
+	}
+
+	public void OnStaminaRecoveryTimerTimeout()
+	{
+		Stamina += 1;
 	}
 }

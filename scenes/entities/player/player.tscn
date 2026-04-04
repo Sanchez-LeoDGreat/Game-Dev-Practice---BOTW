@@ -22,8 +22,21 @@ shape = SubResource("CapsuleShape3D_1hmtu")
 [node name="CameraController" parent="." instance=ExtResource("2_635qg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7467123, 0)
 
-[node name="InvulTimer" type="Timer" parent="."]
+[node name="UI" parent="." instance=ExtResource("4_nh4ur")]
+
+[node name="Timers" type="Node" parent="."]
+
+[node name="InvulTimer" type="Timer" parent="Timers"]
 wait_time = 0.8
 one_shot = true
 
-[node name="UI" parent="." instance=ExtResource("4_nh4ur")]
+[node name="EnergyRecoveryTimer" type="Timer" parent="Timers"]
+wait_time = 0.2
+autostart = true
+
+[node name="StaminaRecoveryTimer" type="Timer" parent="Timers"]
+wait_time = 0.15
+autostart = true
+
+[connection signal="timeout" from="Timers/EnergyRecoveryTimer" to="." method="OnEnergyRecoveryTimerTimeout"]
+[connection signal="timeout" from="Timers/StaminaRecoveryTimer" to="." method="OnStaminaRecoveryTimerTimeout"]
