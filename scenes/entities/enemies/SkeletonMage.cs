@@ -10,6 +10,7 @@ public partial class SkeletonMage : Enemy
 	{
 		base._Ready();
 		this.marker3D = this.GetNode<Marker3D>("skin/Rig/Skeleton3D/BoneAttachment3D/wand2/wand/Marker3D");
+		this._health = 2;
 	}
 
 	public bool isPlayerTooClose()

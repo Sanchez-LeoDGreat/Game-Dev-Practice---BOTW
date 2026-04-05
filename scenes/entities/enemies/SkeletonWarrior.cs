@@ -18,6 +18,7 @@ public partial class SkeletonWarrior : Enemy
     {
         base._Ready();
         bone = (Bone)this.GetNode<Bone>("skin/Rig/Skeleton3D/Skeleton_Sword/Bone");
+        this._health = 3;
     }
 
     public override void _PhysicsProcess(double delta)

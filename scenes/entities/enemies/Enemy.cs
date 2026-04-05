@@ -21,6 +21,20 @@ public partial class Enemy : CharacterBody3D
     public Timer invulTimer;
     public RandomNumberGenerator RNG = new RandomNumberGenerator();
     public Marker3D marker3D;
+    public int _health = 5;
+    public int Health
+    {
+        get => _health;
+        set
+        {
+            _health = value;
+
+            if (_health <= 0)
+            {
+                this.QueueFree();
+            }
+        }
+    }
     private float _squashAndStretch = 1.0f;
     public float SquashAndStretch
     {
@@ -132,6 +146,7 @@ public partial class Enemy : CharacterBody3D
         if (!Convert.ToBoolean(invulTimer.TimeLeft))
         {
             DoSquashAndStretch(1.2f, 0.15f);
+            Health -= 1;
             invulTimer.Start();
         }
     }
