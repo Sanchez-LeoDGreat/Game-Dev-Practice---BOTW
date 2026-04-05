@@ -11,7 +11,6 @@
 collision_layer = 2
 collision_mask = 29
 script = ExtResource("1_1hmtu")
-runSpeed = 6.0
 
 [node name="GodetteSkin" parent="." instance=ExtResource("2_58kc7")]
 
