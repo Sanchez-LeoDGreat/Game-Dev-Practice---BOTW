@@ -1,6 +1,7 @@
-[gd_scene load_steps=27 format=3 uid="uid://cvrps8ehald5l"]
+[gd_scene load_steps=33 format=3 uid="uid://cvrps8ehald5l"]
 
 [ext_resource type="PackedScene" uid="uid://da8vgj3rchj5q" path="res://scenes/levels/level.tscn" id="1_fl1qg"]
+[ext_resource type="PackedScene" uid="uid://dwnf00gwmi56f" path="res://scenes/entities/others/bird.tscn" id="2_8hgyr"]
 [ext_resource type="PackedScene" uid="uid://buaykpn7br00r" path="res://scenes/levels/overworld_environment.tscn" id="2_l7h5l"]
 [ext_resource type="PackedScene" uid="uid://defd80nyuanxo" path="res://graphics/environment/objects/barrel.glb" id="3_tbicr"]
 [ext_resource type="PackedScene" uid="uid://b4rhqen2u7u1d" path="res://graphics/environment/objects/campfire.glb" id="4_c3d33"]
@@ -25,6 +26,42 @@
 [ext_resource type="PackedScene" uid="uid://n4i14ik41cri" path="res://graphics/environment/castle.glb" id="23_n0hg8"]
 [ext_resource type="PackedScene" uid="uid://bgkbet728sbnu" path="res://graphics/environment/objects/target.glb" id="24_vnvtj"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_vnvtj"]
+sky_top_color = Color(0.38431373, 0.45490196, 0.54901963, 1)
+sky_horizon_color = Color(0.66242814, 0.67232513, 0.6868546, 1)
+ground_horizon_color = Color(0.66242814, 0.67232513, 0.6868546, 1)
+
+[sub_resource type="Sky" id="Sky_8hgyr"]
+sky_material = SubResource("ProceduralSkyMaterial_vnvtj")
+
+[sub_resource type="Environment" id="Environment_xahul"]
+background_mode = 1
+background_color = Color(0.48235294, 0.50980395, 0.9019608, 1)
+sky = SubResource("Sky_8hgyr")
+ambient_light_source = 2
+ambient_light_color = Color(0.96862745, 0.8352941, 0.85882354, 1)
+ambient_light_energy = 0.6
+tonemap_mode = 2
+ssao_enabled = true
+ssil_enabled = true
+glow_intensity = 0.09
+fog_light_color = Color(0.50980395, 0.8745098, 0.8901961, 1)
+fog_density = 0.001
+volumetric_fog_density = 0.005
+adjustment_brightness = 1.1
+adjustment_contrast = 1.2
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_vnvtj"]
+dof_blur_far_distance = 222.0
+
+[sub_resource type="Curve3D" id="Curve3D_vnvtj"]
+closed = true
+_data = {
+"points": PackedVector3Array(-32.213287, 0, 18.649788, 32.213287, 0, -18.649788, -130.7711, 0, 123.845436, -88.162605, 0, -33.9087, 88.162605, 0, 33.9087, 126.93525, 0, 115.36826, 8.477173, 0, -28.822433, -8.477173, 0, 28.822433, 220.18422, 0, 256.08948, 123.766914, 0, -3.3908997, -123.766914, 0, 3.3908997, 25.208992, 0, 398.50613, 22.04068, 0, 69.51291, -22.04068, 0, -69.51291, -203.67485, 0, 273.04382),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0)
+}
+point_count = 5
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tbicr"]
 albedo_color = Color(0, 0.32156864, 1, 1)
 
@@ -34,13 +71,27 @@ size = Vector2(550, 300)
 
 [node name="Overworld" instance=ExtResource("1_fl1qg")]
 
-[node name="DirectionalLight3D" parent="." index="1"]
-light_color = Color(0.84464115, 0.8433769, 0.73831797, 1)
-light_energy = 0.5
-light_indirect_energy = 1.0
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." index="0"]
+environment = SubResource("Environment_xahul")
+camera_attributes = SubResource("CameraAttributesPractical_vnvtj")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." index="1"]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+light_color = Color(0.9411765, 0.9411765, 0.9411765, 1)
+shadow_enabled = true
+shadow_opacity = 0.9
+shadow_blur = 4.5
 
 [node name="Player" parent="Entities" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6419373, -153.36798)
+
+[node name="Path3D" type="Path3D" parent="Entities" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.480011, 0)
+curve = SubResource("Curve3D_vnvtj")
+
+[node name="Bird" parent="Entities/Path3D" index="0" instance=ExtResource("2_8hgyr")]
+transform = Transform3D(-0.5010358, 0, 0.865426, 0, 1, 0, -0.865426, 0, -0.5010358, -130.7711, 0, 123.845436)
+use_model_front = true
 
 [node name="overworld_environment" parent="Environment" index="0" instance=ExtResource("2_l7h5l")]
 
@@ -535,3 +586,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.196724, -9.14399, -156.932
 
 [node name="castle" parent="Environment" index="4" instance=ExtResource("23_n0hg8")]
 transform = Transform3D(0.9379071, 0, 0.34688655, 0, 1, 0, -0.34688655, 0, 0.9379071, -162.50949, -33.726013, 325.6635)
+
+[node name="Camera3D" type="Camera3D" parent="." index="5"]
+transform = Transform3D(-0.4455417, 0, 0.8952613, 0, 1, 0, -0.8952613, 0, -0.4455417, -0.79704285, 20.809998, -54.17444)

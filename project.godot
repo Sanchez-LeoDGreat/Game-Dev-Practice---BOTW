@@ -11,13 +11,17 @@ config_version=5
 [application]
 
 config/name="Godot BotW"
-run/main_scene="uid://dkrhheyk1orky"
+run/main_scene="uid://cvrps8ehald5l"
 config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://graphics/icon.png"
 
 [dotnet]
 
 project/assembly_name="Godot BotW"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/terrain_3d/plugin.cfg")
 
 [input]
 
