@@ -1,10 +1,13 @@
-[gd_scene load_steps=33 format=3 uid="uid://cvrps8ehald5l"]
+[gd_scene load_steps=37 format=3 uid="uid://cvrps8ehald5l"]
 
 [ext_resource type="PackedScene" uid="uid://da8vgj3rchj5q" path="res://scenes/levels/level.tscn" id="1_fl1qg"]
 [ext_resource type="PackedScene" uid="uid://dwnf00gwmi56f" path="res://scenes/entities/others/bird.tscn" id="2_8hgyr"]
 [ext_resource type="PackedScene" uid="uid://buaykpn7br00r" path="res://scenes/levels/overworld_environment.tscn" id="2_l7h5l"]
+[ext_resource type="Script" uid="uid://dtn2qvue17lqk" path="res://scenes/levels/Overworld.cs" id="2_xahul"]
 [ext_resource type="PackedScene" uid="uid://defd80nyuanxo" path="res://graphics/environment/objects/barrel.glb" id="3_tbicr"]
 [ext_resource type="PackedScene" uid="uid://b4rhqen2u7u1d" path="res://graphics/environment/objects/campfire.glb" id="4_c3d33"]
+[ext_resource type="PackedScene" uid="uid://xd14sj8qa6f3" path="res://scenes/entities/enemies/skeleton_mage.tscn" id="4_ms2oj"]
+[ext_resource type="PackedScene" uid="uid://bxasods8ljxk8" path="res://scenes/entities/enemies/skeleton_warrior.tscn" id="5_5vv60"]
 [ext_resource type="PackedScene" uid="uid://dxvaiymlygd8b" path="res://graphics/environment/objects/camp.glb" id="6_usmjs"]
 [ext_resource type="PackedScene" uid="uid://d2pglgy0w12pg" path="res://graphics/environment/objects/chest.glb" id="7_g6jrr"]
 [ext_resource type="PackedScene" uid="uid://017tob8o06v3" path="res://graphics/environment/objects/log.glb" id="9_md8tm"]
@@ -42,8 +45,6 @@ ambient_light_source = 2
 ambient_light_color = Color(0.96862745, 0.8352941, 0.85882354, 1)
 ambient_light_energy = 0.6
 tonemap_mode = 2
-ssao_enabled = true
-ssil_enabled = true
 glow_intensity = 0.09
 fog_light_color = Color(0.50980395, 0.8745098, 0.8901961, 1)
 fog_density = 0.001
@@ -69,7 +70,11 @@ albedo_color = Color(0, 0.32156864, 1, 1)
 material = SubResource("StandardMaterial3D_tbicr")
 size = Vector2(550, 300)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_xahul"]
+size = Vector3(2.036316, 3.715332, 2.1483154)
+
 [node name="Overworld" instance=ExtResource("1_fl1qg")]
+script = ExtResource("2_xahul")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." index="0"]
 environment = SubResource("Environment_xahul")
@@ -92,6 +97,15 @@ curve = SubResource("Curve3D_vnvtj")
 [node name="Bird" parent="Entities/Path3D" index="0" instance=ExtResource("2_8hgyr")]
 transform = Transform3D(-0.5010358, 0, 0.865426, 0, 1, 0, -0.865426, 0, -0.5010358, -130.7711, 0, 123.845436)
 use_model_front = true
+
+[node name="skeleton_mage" parent="Entities" index="2" instance=ExtResource("4_ms2oj")]
+transform = Transform3D(0.28386468, 0, 0.95886433, 0, 1, 0, -0.95886433, 0, 0.28386468, -166.96756, -28.719112, 297.8415)
+
+[node name="skeleton_warrior" parent="Entities" index="3" instance=ExtResource("5_5vv60")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -160.91747, -29.637932, 307.0657)
+
+[node name="skeleton_warrior2" parent="Entities" index="4" instance=ExtResource("5_5vv60")]
+transform = Transform3D(-0.33972302, 0, 0.94052553, 0, 1, 0, -0.94052553, 0, -0.33972302, -159.06526, -32.26411, 298.94482)
 
 [node name="overworld_environment" parent="Environment" index="0" instance=ExtResource("2_l7h5l")]
 
@@ -587,5 +601,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.196724, -9.14399, -156.932
 [node name="castle" parent="Environment" index="4" instance=ExtResource("23_n0hg8")]
 transform = Transform3D(0.9379071, 0, 0.34688655, 0, 1, 0, -0.34688655, 0, 0.9379071, -162.50949, -33.726013, 325.6635)
 
+[node name="CastleDoor" type="Area3D" parent="Environment/castle" index="8"]
+transform = Transform3D(0.94619274, 0, 0.32360372, 0, 0.9999999, 0, -0.32360372, 0, 0.94619274, 5.5859985, 6.6389656, -7.7238617)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/castle/CastleDoor" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5181885, 1.357666, -0.04689026)
+shape = SubResource("BoxShape3D_xahul")
+
 [node name="Camera3D" type="Camera3D" parent="." index="5"]
 transform = Transform3D(-0.4455417, 0, 0.8952613, 0, 1, 0, -0.8952613, 0, -0.4455417, -0.79704285, 20.809998, -54.17444)
+
+[connection signal="body_entered" from="Environment/castle/CastleDoor" to="." method="OnCastleDoorBodyEntered"]

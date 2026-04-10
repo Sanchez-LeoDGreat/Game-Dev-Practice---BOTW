@@ -121,6 +121,7 @@ public partial class Player : CharacterBody3D
 		JumpLogic(delta);
 		AbilityLogic();
 		this.MoveAndSlide();
+		this.PhysicsLogic();
 	}
 
 	private void MoveLogic(double delta)
@@ -241,5 +242,18 @@ public partial class Player : CharacterBody3D
 	public void OnStaminaRecoveryTimerTimeout()
 	{
 		Stamina += 1;
+	}
+
+	public void PhysicsLogic()
+	{
+		for (int i = 1; i < this.GetSlideCollisionCount(); i++)
+		{
+			GodotObject collider = this.GetSlideCollision(i).GetCollider();
+			if (collider is RigidBody3D)
+			{
+				RigidBody3D coll = (RigidBody3D)collider;
+				coll.ApplyCentralImpulse(-this.GetSlideCollision(i).GetNormal());
+			}
+		}
 	}
 }

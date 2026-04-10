@@ -93,13 +93,16 @@ public partial class Enemy : CharacterBody3D
                 this.Velocity = Vector3.Zero;
                 moveStateMachine.Travel("Idle");
             }
-
-            this.MoveAndSlide();
         }
         else
         {
             moveStateMachine.Travel("Idle");
         }
+
+        Vector3 velocity = this.Velocity;
+        velocity.Y = !this.IsOnFloor() ? -2 : 0;
+        this.Velocity = velocity;
+        this.MoveAndSlide();
     }
     public Vector2 GetTargetVector2()
     {
