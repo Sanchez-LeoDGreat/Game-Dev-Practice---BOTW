@@ -8,12 +8,10 @@ public partial class SkeletonMage : Enemy
 	public float backwardWalkSpeed = 0.8f;
 	public override void _Ready()
 	{
+		this.canLaunchProjectiles = true;
 		base._Ready();
 		this.marker3D = this.GetNode<Marker3D>("skin/Rig/Skeleton3D/BoneAttachment3D/wand2/wand/Marker3D");
 		this._health = 2;
-
-		Level level = (Level)this.GetTree().Root.GetChild(0);
-		this.Connect(SignalName.CastSpell, new Callable(level, nameof(level.OnEntityCastSpell)));
 	}
 
 	public bool isPlayerTooClose()

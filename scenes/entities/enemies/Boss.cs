@@ -17,6 +17,7 @@ public partial class Boss : Enemy
     };
     public override void _Ready()
     {
+        this.canLaunchProjectiles = true;
         base._Ready();
         this.walkSpeed = 5f;
         rayCast3D = this.GetNode<RayCast3D>("skin/Rig/Skeleton3D/Nagonford_Axe/RayCast3D");

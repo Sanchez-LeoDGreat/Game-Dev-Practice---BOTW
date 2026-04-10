@@ -11,6 +11,7 @@ public partial class Enemy : CharacterBody3D
     [Export]
     public float attackRadius = 1.5f;
     private float speedModifier = 1.0f;
+    public bool canLaunchProjectiles = false;
     public CharacterBody3D player;
     public Node3D skin;
     public AnimationTree animTree;
@@ -59,6 +60,12 @@ public partial class Enemy : CharacterBody3D
         attackAnimation = (AnimationNodeAnimation)this.blendTree.GetNode("AttackAnimation");
         attackTimer = (Timer)this.GetNode("Timers/AttackTimer");
         invulTimer = (Timer)this.GetNode("Timers/InvulTimer");
+
+        if (canLaunchProjectiles)
+        {
+            Level level = (Level)this.GetTree().Root.GetChild(0);
+            this.Connect(SignalName.CastSpell, new Callable(level, nameof(level.OnEntityCastSpell)));
+        }
     }
 
     public bool isPlayerWithinNoticeRange()
